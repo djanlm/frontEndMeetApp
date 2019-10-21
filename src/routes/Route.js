@@ -21,7 +21,7 @@ export default function RouteWrapper({
 
   /** If the user is loggedin and the page is not private, he will be redirected to dashboard page */
   if (signed && !isPrivate) {
-    return <Redirect to="/dashboard" />;
+    return <Redirect to="/mymeetups" />;
   }
 
   const Layout = signed ? DefaultLayout : AuthLayout;

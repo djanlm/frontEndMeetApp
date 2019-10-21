@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { MdKeyboardArrowRight, MdAddCircleOutline } from 'react-icons/md';
 import { Link } from 'react-router-dom';
+import { format, parseISO } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
 
 import api from '../../services/api';
 import history from '../../services/history';
@@ -13,7 +15,19 @@ export default function Dashboard() {
   useEffect(() => {
     async function loadMeetups() {
       const response = await api.get('mymeetups');
-      setMeetups(response.data);
+
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone; // fetchs the user time zone
+      const pattern = "MMMM dd, 'at' HH'h'mm'm'";
+      console.tron.log(timezone);
+
+      const data = response.data.map(meetup => {
+        const zonedDate = utcToZonedTime(parseISO(meetup.date), timezone); // adapta a hora vinda de api pra o horário da time zone
+        return {
+          ...meetup,
+          formattedDate: format(zonedDate, pattern, { timezone }),
+        };
+      });
+      setMeetups(data);
     }
 
     loadMeetups();
@@ -32,15 +46,17 @@ export default function Dashboard() {
           </button>
         </Top>
         <List>
-          {meetups.map(meetup => (
-            <Link to="/details">
-              <ListElement key={meetup.id}>
-                <strong>{meetup.title}</strong>
-                <span>24 de junho,às 20h</span>
-                <MdKeyboardArrowRight size="30" color="#fff" />
-              </ListElement>
-            </Link>
-          ))}
+          {meetups.map(meetup => {
+            return (
+              <Link to="/details">
+                <ListElement key={meetup.id}>
+                  <strong>{meetup.title}</strong>
+                  <span>{meetup.formattedDate}</span>
+                  <MdKeyboardArrowRight size="30" color="#fff" />
+                </ListElement>
+              </Link>
+            );
+          })}
         </List>
       </Content>
     </Container>

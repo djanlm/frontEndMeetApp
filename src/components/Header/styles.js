@@ -6,10 +6,10 @@ export const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 92px;
 `;
 
 export const Content = styled.div`
-  height: 92px;
   max-width: 940px;
   width: 100%;
   display: flex;

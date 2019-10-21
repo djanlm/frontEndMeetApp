@@ -13,16 +13,17 @@ export default createGlobalStyle`
     outline:0;
   }
 
-  html, body, #root {
-    height: 100%;
-    background: linear-gradient(#22202c, #402845);
+  html{
+    min-height:100%;
+    background-image: linear-gradient(#22202c, #402845);
   }
 
   body {
     -webkit-font-smoothing: antialiased;
+
   }
 
-  body, input, button {
+  body, input, button, textarea {
     font: 14px 'Helvetica', sans-serif;
   }
 
