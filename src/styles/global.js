@@ -14,11 +14,18 @@ export default createGlobalStyle`
   }
 
   html{
-    min-height:100%;
-    background-image: linear-gradient(#22202c, #402845);
+    height: 100%;
+    background-image: linear-gradient(#22202c, #402845) ;
+}
+
+  #root{
+    height:100%;
+    background-image: linear-gradient(#22202c, #402845) ;
   }
 
   body {
+    height: 100%;
+    background-image: linear-gradient(#22202c, #402845) ;
     -webkit-font-smoothing: antialiased;
 
   }

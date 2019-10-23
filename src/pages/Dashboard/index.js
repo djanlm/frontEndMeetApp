@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { MdKeyboardArrowRight, MdAddCircleOutline } from 'react-icons/md';
-import { Link } from 'react-router-dom';
+
 import { format, parseISO } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 
 import api from '../../services/api';
-import history from '../../services/history';
+import {
+  editMeetupRequest,
+  deleteMeetupStateRequest,
+} from '../../store/modules/meetup/actions';
 
 import { Container, Content, Top, List, ListElement } from './styles';
 
@@ -18,7 +22,6 @@ export default function Dashboard() {
 
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone; // fetchs the user time zone
       const pattern = "MMMM dd, 'at' HH'h'mm'm'";
-      console.tron.log(timezone);
 
       const data = response.data.map(meetup => {
         const zonedDate = utcToZonedTime(parseISO(meetup.date), timezone); // adapta a hora vinda de api pra o horário da time zone
@@ -33,8 +36,14 @@ export default function Dashboard() {
     loadMeetups();
   }, []);
 
+  const dispatch = useDispatch();
+
   function handleClick() {
-    history.push('/edit');
+    dispatch(deleteMeetupStateRequest());
+  }
+
+  function handleDetails(id) {
+    dispatch(editMeetupRequest(id));
   }
   return (
     <Container>
@@ -48,13 +57,14 @@ export default function Dashboard() {
         <List>
           {meetups.map(meetup => {
             return (
-              <Link to="/details">
-                <ListElement key={meetup.id}>
-                  <strong>{meetup.title}</strong>
-                  <span>{meetup.formattedDate}</span>
-                  <MdKeyboardArrowRight size="30" color="#fff" />
-                </ListElement>
-              </Link>
+              <ListElement
+                key={meetup.id}
+                onClick={() => handleDetails(meetup.id)}
+              >
+                <strong>{meetup.title}</strong>
+                <span>{meetup.formattedDate}</span>
+                <MdKeyboardArrowRight size="30" color="#fff" />
+              </ListElement>
             );
           })}
         </List>

@@ -1,55 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Form, Input } from '@rocketseat/unform';
 import { MdAddCircleOutline } from 'react-icons/md';
+import { useDispatch, useSelector } from 'react-redux';
+import * as Yup from 'yup';
+import PropTypes from 'prop-types';
+
+import { updateMeetupRequest } from '../../store/modules/meetup/actions';
 
 import BannerInput from './BannerInput';
 import { Container } from './styles';
-import api from '../../services/api';
+
+const schema = Yup.object().shape({
+  file_id: Yup.string().required('Image is required'),
+  title: Yup.string().required('Title is required'),
+  description: Yup.string().required('Description is required'),
+  date: Yup.string().required('Date is required'),
+  location: Yup.string().required('Location is required'),
+});
 
 export default function Create_edit({ match }) {
-  const [meetups, setMeetups] = useState([]);
-  const [meetupExist, setMeetupExist] = useState(false);
-  const [editMeetup, setEditMeetup] = useState({});
+  const dispatch = useDispatch();
   const { meetupId } = match.params;
 
-  useEffect(() => {
-    async function loadMeetups() {
-      const response = await api.get('mymeetups');
-      setMeetups(response.data);
+  const meetup = useSelector(state => state.meetup.meetup);
+  console.tron.log(meetup);
+  /* useEffect(() => {
+    if (meetup !== null) {
+      if (meetupId !== String(meetup.id)) {
+        dispatch(deleteMeetupStateRequest());
+      }
     }
+  }, [meetupId, meetup, dispatch]); */
 
-    loadMeetups();
-  }, []);
-
-  useEffect(() => {
-    const findMeetup = meetups.find(m => {
-      return meetupId === String(m.id);
-    });
-    if (findMeetup) {
-      setMeetupExist(true);
-      setEditMeetup(findMeetup);
-    } else {
-      setMeetupExist(false);
-      setEditMeetup({});
-    }
-  }, [meetupId, meetups]);
-
-  const url = meetups.map(m => {
-    return m.banner.url;
-  });
-
-  const index = meetups.findIndex(m => meetupId === String(m.id));
-
-  function handleClick() {}
+  function handleSubmit(data) {
+    data = { ...data, meetupId };
+    dispatch(updateMeetupRequest(data));
+  }
 
   return (
     <Container>
-      <Form initialData={editMeetup}>
-        <BannerInput
-          name="file_id"
-          urlBanner={url[index]}
-          meetupExist={meetupExist}
-        />
+      <Form schema={schema} initialData={meetup} onSubmit={handleSubmit}>
+        <BannerInput name="file_id" />
         <Input name="title" placeholder="Meetup title" />
         <Input
           multiline
@@ -57,12 +48,16 @@ export default function Create_edit({ match }) {
           type="text"
           placeholder="Meetup description"
         />
-        <Input name="date" placeholder="Meetup date" />
+        <Input name="date" placeholder="Date: YYYY-MM-DDTHH:MM:SS.000Z" />
         <Input name="location" placeholder="Meetup location" />
+        <button type="submit">
+          <MdAddCircleOutline size="20" /> <span>Save meetup</span>
+        </button>
       </Form>
-      <button type="button" onClick={handleClick}>
-        <MdAddCircleOutline size="20" /> <span>New meetup</span>
-      </button>
     </Container>
   );
 }
+
+Create_edit.propTypes = {
+  match: PropTypes.element.isRequired,
+};

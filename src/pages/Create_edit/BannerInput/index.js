@@ -6,8 +6,9 @@ import api from '../../../services/api';
 
 import { Container } from './styles';
 
-export default function BannerInput({ urlBanner, meetupExist }) {
+export default function BannerInput() {
   const { defaultValue, registerField } = useField('banner');
+
   const [file, setFile] = useState(defaultValue && defaultValue.id);
   const [preview, setPreview] = useState(defaultValue && defaultValue.url);
 
@@ -36,11 +37,11 @@ export default function BannerInput({ urlBanner, meetupExist }) {
     setFile(id);
     setPreview(url);
   }
-  console.tron.log(meetupExist);
+
   return (
-    <Container hasPreview={meetupExist || preview}>
+    <Container hasPreview={preview}>
       <label htmlFor="banner">
-        <img src={preview || urlBanner} alt="banner" />
+        <img src={preview} alt="banner" />
 
         <span>
           <MdPhotoCamera size="40px" />
